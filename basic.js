@@ -130,7 +130,7 @@ db.customers.find({
 // SELECT * FROM orders WHERE items.product_id = 1
 db.orders.find({
     "items.product_id": 1
-})
+});
 
 //  ----------------------- COMPARISON OPERATOR ---------------------- //
 
@@ -150,7 +150,7 @@ db.NameCollection.find(
             $oprator: "value"
         }
     }
-)
+);
 */
 
 // select * from customers where _id ="Iis"
@@ -158,7 +158,7 @@ db.customers.find({
     _id:{
         $eq:"Iis"
     }
-})
+});
 
 //select* from products where price > 50000
 db.products.find(
@@ -167,7 +167,7 @@ db.products.find(
             $gt:50000
         }
     }
-)
+);
 
 // select * from product where category in("handphone","laptop") and price > 500000 -> ambil semua data dari collection products dimana category nya handphone atau laptop dan price nya lrbih besar dari 500000
 db.products.find({
@@ -177,7 +177,7 @@ db.products.find({
     price:{
         $gt:500000
     }
-})
+});
 
 //  ----------------------- LOGICAL OPERATOR ---------------------- //
 
@@ -196,7 +196,7 @@ db.NameCollection.find({
             query
         }
        ]
-    })
+    });
 
 --> logical operator for $not
 db.NameCollection.find({
@@ -205,7 +205,7 @@ db.NameCollection.find({
             query
         }
        }
-    })
+    });
 */
 
 // select * from products where category in ("handphone","laptop") and price > 500000
@@ -214,14 +214,14 @@ db.products.find({
         {category:$in("handphone","laptop")},
         {price:{$gt:500000}}
     ]
-})
+});
 
 // select * from products where category noy in ("handphoone","laptop")
 db.products.find({
     category:{
         $not:{$in:['handphone','laptop']}
     }
-})
+});
 
 // select * from products where price between 10000 and 20000 and category != 'food'
 db.products.find({
@@ -232,11 +232,177 @@ db.products.find({
     catgeory:{
         $ne:"food"
     }
-})
+});
 // atau bisa juga
 db.products.find({
     $end:[
         {price:{$gte:10000,$lte:20000}},
         {category:{$ne:"food"}}
     ]
+});
+
+// ----------------------- ELEMENT OPERATOR ---------------------- //
+/*
+-> $exists  : mencocokan document yang memiliki atribut field yang sama dengan yang akan dibandingkan
+-> $type      : mencocokan documeny yang memiliki type field yang sama dengan yang akan dibandingkan
+
+db.customers.find({
+    field:{
+        $operator : value
+    }
+});
+ */
+
+// select * from products where category is null
+db.products.find({
+    category:{
+        $exsists : false
+    }
+});
+
+//select * from products where type( category) = 'string'
+db.products.find({
+    category:{
+        $type : "string"
+    }
+});
+
+// select* from produts where type(price) in ('int','long')
+db.products.find({
+    price:{
+        $type : ['int','long']
+    }
+});
+
+// ----------------------- EVALUATION QUERY OPERATOR ---------------------- //
+/*
+-> $expr            : menggunakan aggregation operator
+-> $jsonSchema      : validasi document sesuai dengan JSON schema
+-> $mod             : melakukan operasi moldulo
+-> $regex           : mengambil documney sesuai dengan regular expression (PCRE) jika di sql sama seperti like
+-> $text            : melkaukan pencarian menggunakan text
+-> $where           : mengambil document dengan javasript function (tidak bisa dijalankan di mongoshell)
+
+ */
+
+// select * from customers where _id = name
+db.customers.find({
+    $expr :{
+        $eq:['$_id','$name']
+    }
+});
+
+
+/* ------------ $$jsonSchema ------------ */
+// select * from products where name s not  null and catgeory is not null
+db.products.find({
+    $jsonSchema:{
+        required:['name','category']
+    }
+});
+
+// select * from products where name is not null and type (name) = "string" and type(price) = "number"
+db.products.find({
+    $jsonSchema:{
+        required:['name'],
+        properties:{
+            name:{
+                type:"string"
+            },
+            price:{
+                type:"number"
+            }
+        }
+    }
+});
+
+/* ------------ $mod ------------ */
+// select * from products where price % 5 = 0
+db.products.find({
+    price:{
+        $mod:[5,0]
+    }
+});
+
+/* ------------ $regex ------------ */
+// select * from products where name like "%mie%"
+db.products.find({
+    name:{
+        $regex:/mie/,
+        $options:"i" // "i" maksudnya adalah in case sensitive (besar kecil huruf tidak diperhatikan)
+    }
+});
+
+// select * from products where name like "Mie%" ( yang depannya Mie)
+db.products.find({
+    name:{
+        $regex:/^Mie/,
+        
+    }
+});
+
+/* ------------ $where ------------ */
+// select * from customers where _id = name
+db.customers.find({
+    $where:function(){
+        return this._id = this.name
+    }
+});
+
+// ----------------------- ARRAY QUERY OPERATOR ---------------------- //
+/*
+-> $all            : Mencocokan array yang mengandung element - element tertentu
+-> $elemMatch      : Mengambil document jika tiap element di array memenuhi kondisi tertentu
+-> $size           : Mengambil document jika ukuran array sesuai
+
+ */
+
+
+/* ------------ $all ------------ */
+//  select * products where category = "handphone" and category ="laptop"
+db.products.find({
+    category:{
+        $all:['handphone','laptop']
+    }
+});
+
+/* ------------ $elemMatch ------------ */
+// select * products where in category ('handphone','laptop')
+db.products.find({
+    category:{
+        $elemMatch:{
+            $in :['handphone','laptop']
+        }
+    }
+});
+
+/* ------------ $size ------------ */
+// select * products where count(category) = 3
+db.products.find({
+    category:{
+        $size:3
+    }
+});
+
+// ----------------------- PROJECTION OPERATOR ---------------------- //
+/*
+-> Pada function find, terdapat parameter kedua setelah query, yaitu projection
+-> projection adalah memilih field mana yang ingin kita ambil atau hide  (field apa saya yang akan ditampilkan)
+
+db.NamaCollection.find(query,projection)
+
+ */
+// select _id,name,category from products
+db.products.find({},{
+    name:1, // 1 -> penanda bahwa name kita tampilkan
+    category:1 // 1 -> penanda bahwa category kita tampilkan
 })
+// select _id,name,price from products
+db.products.find({},{
+    catgory:0 // 0 -> penanda bahka category tidak kita tampilkan
+})
+
+
+
+
+
