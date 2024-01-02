@@ -155,27 +155,25 @@ db.NameCollection.find(
 
 // select * from customers where _id ="Iis"
 db.customers.find({
-    _id:{
-        $eq:"Iis"
+    _id: {
+        $eq: "Iis"
     }
 });
 
 //select* from products where price > 50000
-db.products.find(
-    {
-        price:{
-            $gt:50000
-        }
+db.products.find({
+    price: {
+        $gt: 50000
     }
-);
+});
 
 // select * from product where category in("handphone","laptop") and price > 500000 -> ambil semua data dari collection products dimana category nya handphone atau laptop dan price nya lrbih besar dari 500000
 db.products.find({
-    category:{
-        $in:["handphone","laptop"]
+    category: {
+        $in: ["handphone", "laptop"]
     },
-    price:{
-        $gt:500000
+    price: {
+        $gt: 500000
     }
 });
 
@@ -210,34 +208,49 @@ db.NameCollection.find({
 
 // select * from products where category in ("handphone","laptop") and price > 500000
 db.products.find({
-    $and:[
-        {category:$in("handphone","laptop")},
-        {price:{$gt:500000}}
+    $and: [{
+            category: $in("handphone", "laptop")
+        },
+        {
+            price: {
+                $gt: 500000
+            }
+        }
     ]
 });
 
 // select * from products where category noy in ("handphoone","laptop")
 db.products.find({
-    category:{
-        $not:{$in:['handphone','laptop']}
+    category: {
+        $not: {
+            $in: ['handphone', 'laptop']
+        }
     }
 });
 
 // select * from products where price between 10000 and 20000 and category != 'food'
 db.products.find({
-    price:{
-        $gte:10000,
-        $lte:20000
+    price: {
+        $gte: 10000,
+        $lte: 20000
     },
-    catgeory:{
-        $ne:"food"
+    catgeory: {
+        $ne: "food"
     }
 });
 // atau bisa juga
 db.products.find({
-    $end:[
-        {price:{$gte:10000,$lte:20000}},
-        {category:{$ne:"food"}}
+    $end: [{
+            price: {
+                $gte: 10000,
+                $lte: 20000
+            }
+        },
+        {
+            category: {
+                $ne: "food"
+            }
+        }
     ]
 });
 
@@ -255,22 +268,22 @@ db.customers.find({
 
 // select * from products where category is null
 db.products.find({
-    category:{
-        $exsists : false
+    category: {
+        $exsists: false
     }
 });
 
 //select * from products where type( category) = 'string'
 db.products.find({
-    category:{
-        $type : "string"
+    category: {
+        $type: "string"
     }
 });
 
 // select* from produts where type(price) in ('int','long')
 db.products.find({
-    price:{
-        $type : ['int','long']
+    price: {
+        $type: ['int', 'long']
     }
 });
 
@@ -287,8 +300,8 @@ db.products.find({
 
 // select * from customers where _id = name
 db.customers.find({
-    $expr :{
-        $eq:['$_id','$name']
+    $expr: {
+        $eq: ['$_id', '$name']
     }
 });
 
@@ -296,21 +309,21 @@ db.customers.find({
 /* ------------ $$jsonSchema ------------ */
 // select * from products where name s not  null and catgeory is not null
 db.products.find({
-    $jsonSchema:{
-        required:['name','category']
+    $jsonSchema: {
+        required: ['name', 'category']
     }
 });
 
 // select * from products where name is not null and type (name) = "string" and type(price) = "number"
 db.products.find({
-    $jsonSchema:{
-        required:['name'],
-        properties:{
-            name:{
-                type:"string"
+    $jsonSchema: {
+        required: ['name'],
+        properties: {
+            name: {
+                type: "string"
             },
-            price:{
-                type:"number"
+            price: {
+                type: "number"
             }
         }
     }
@@ -319,32 +332,32 @@ db.products.find({
 /* ------------ $mod ------------ */
 // select * from products where price % 5 = 0
 db.products.find({
-    price:{
-        $mod:[5,0]
+    price: {
+        $mod: [5, 0]
     }
 });
 
 /* ------------ $regex ------------ */
 // select * from products where name like "%mie%"
 db.products.find({
-    name:{
-        $regex:/mie/,
-        $options:"i" // "i" maksudnya adalah in case sensitive (besar kecil huruf tidak diperhatikan)
+    name: {
+        $regex: /mie/,
+        $options: "i" // "i" maksudnya adalah in case sensitive (besar kecil huruf tidak diperhatikan)
     }
 });
 
 // select * from products where name like "Mie%" ( yang depannya Mie)
 db.products.find({
-    name:{
-        $regex:/^Mie/,
-        
+    name: {
+        $regex: /^Mie/,
+
     }
 });
 
 /* ------------ $where ------------ */
 // select * from customers where _id = name
 db.customers.find({
-    $where:function(){
+    $where: function () {
         return this._id = this.name
     }
 });
@@ -361,17 +374,17 @@ db.customers.find({
 /* ------------ $all ------------ */
 //  select * products where category = "handphone" and category ="laptop"
 db.products.find({
-    category:{
-        $all:['handphone','laptop']
+    category: {
+        $all: ['handphone', 'laptop']
     }
 });
 
 /* ------------ $elemMatch ------------ */
 // select * products where in category ('handphone','laptop')
 db.products.find({
-    category:{
-        $elemMatch:{
-            $in :['handphone','laptop']
+    category: {
+        $elemMatch: {
+            $in: ['handphone', 'laptop']
         }
     }
 });
@@ -379,8 +392,8 @@ db.products.find({
 /* ------------ $size ------------ */
 // select * products where count(category) = 3
 db.products.find({
-    category:{
-        $size:3
+    category: {
+        $size: 3
     }
 });
 
@@ -391,18 +404,198 @@ db.products.find({
 
 db.NamaCollection.find(query,projection)
 
+-> $            = Limit array hanya mengembalikan data pertama yang match dengan array operator
+-> $elemMatch   = Limit array hanya mengembalikan data pertama yang match dengan kondisi query
+-> $meta        = Mengembalikan informasi metadata yang didapat dari setiap matching document
+-> $slice       = mengontrol jumlah data yang ditampilkan pada array
+
  */
 // select _id,name,category from products
-db.products.find({},{
-    name:1, // 1 -> penanda bahwa name kita tampilkan
-    category:1 // 1 -> penanda bahwa category kita tampilkan
+db.products.find({}, {
+    name: 1, // 1 -> penanda bahwa name kita tampilkan
+    category: 1 // 1 -> penanda bahwa category kita tampilkan
 })
 // select _id,name,price from products
-db.products.find({},{
-    catgory:0 // 0 -> penanda bahka category tidak kita tampilkan
+db.products.find({}, {
+    catgory: 0 // 0 -> penanda bahwa category tidak kita tampilkan
 })
 
 
+/* ------------ $elemMatch ------------ */
+//  select _id,name,category[first] from product -> tampilkan _id,name, 1 data category yang sama dengan data array yang diinginkan dari table product
+db.products.find({}, {
+    name: 1,
+    category: {
+        $elemMatch: {
+            $in: ['Food', 'Electronik']
+        }
+    }
+});
+
+/* ------------ $elemMatch ------------ */
+//  select _id,name,category[first] from product where category is not null-> tampilkan _id,name, 1 data category paling depanyang sama dengan yang diinginkan dari table product
+
+db.products.find({
+    category: {
+        $exsists: true
+    }
+}, {
+    name: 1,
+    "category.$": 1
+})
+
+/* ------------ $slice ------------ */
+//  select _id,name,category[0-1] from product where category is not null-> tampilkan _id,name, 2 data category paling depan yang sama dengan yang diinginkan dari table product
+
+db.products.find({
+    category: {
+        $exsists: true
+    }
+}, {
+    name: 1,
+    category: {
+        $slice: 2
+    }
+})
 
 
+// ----------------------- QUERY MODIFIER ---------------------- //
+/*
+-> Query modifier adalah memodifikasi hasil query yang telah dilakukan, contohnya : mengubah query menjadi jumlah data, membatasi jumlah data dengan paging dll
 
+-> count()      = mengambil jumlah daya yang didapat dari query
+-> limit(size)  = membatasi jumlah data yang didapat dari query
+-> skip(size)   = Menghiraukan data pertama hasil query seejumlah yang ditentukan
+-> slice       = mengurutkan hasil data query (asc,desc)
+
+ */
+
+// select count(*) from product
+db.products.find({}).count()
+
+// select * from products limit 4
+db.products.find({}).limit(4)
+
+// select * from products offset 2
+db.products.find({}).skip(2)
+
+// select * from products limit 4 offset 2
+db.products.find({}).limit(4).skip(2)
+
+// seelct * from product by category asc, name desc
+db.products.find({}).sort({
+    category: 1, //asc
+    name: -1 // desc
+})
+
+// ----------------------- UPDATE DOCUMENT ---------------------- //
+/*
+
+-> updatOne()   = mengubah 1 document
+-> updateMany() = mengubah banyak document sekaligus
+-> replaceOne   = Mengubah total 1 document dengan document baru
+
+db.NameCollection.syntaxUpdate(
+    {}, filter
+    {}, update
+    {}, options
+)
+
+ */
+
+/* ------------ updateOne() ------------ */
+//update product set category = "food" where _id = 1
+db.products.updateOne({
+    _id: 1
+}, {
+    $set: {
+        category: "food"
+    }
+})
+
+/* ------------ updateMany() ------------ */
+//update product set category = "food" price > 30000 and category is not null
+db.products.updateMany({
+    $and: [{
+        price: {
+            $gt: 30000
+        },
+        category: {
+            $exsists: true,
+        }
+    }]
+
+}, {
+    $set: {
+        category: ["food"]
+    }
+});
+
+// ----------------------- UPDATE DOCUMENT FUNCTION ---------------------- //
+/*
+
+-> $set         : mengubah nilai field di document,
+-> $unset       : menghapus field di document
+-> $rename      : mengubah nama field di document,
+-> $inc         : menaikan nilai number di field sesuai dengan jumlah tertentu (increment)
+-> $currentDate : mengubah field menjadi waktu saat ini
+
+
+ */
+
+/* ------------ $set ------------ */
+//update product set stock = 0
+db.products.updateMany({}, {
+    $set: {
+        stock: 0
+    }
+})
+
+/* ------------ $inc ------------ */
+//update product set stock = stock + 1
+db.products.uppdateMany({}, {
+    $inc: {
+        stock: 10 // nilai positif untuk naik nilai negatif untuk turun contoh 10 -> maka naik 10, -10 -> maka turun 10
+    }
+});
+
+/* ------------ $rename ------------ */
+//alter table customers change name full_name
+db.customers.updateMany({},{
+    $rename:{
+        name:"fullName"
+    }
+});
+
+/* ------------ $unset ------------ */
+//alter table customers drop column wrong
+db.customers.updateMany({},{
+    $unset:{
+        wrong:""
+    }
+});
+
+/* ------------ $currentDate ------------ */
+//update products set lastModifiedDate = current_date()
+db.products.updateMany({},{
+    $currentDate:{
+        lastModifiedDate:{
+            $type:"date"
+        }
+    }
+});
+
+// ----------------------- ARRAY UPDATE OPERATOR ---------------------- //
+/*
+
+-> secara default, saat kita mengubah field dengan type data array, maka seluruh array akan diubah
+-> kadang kita ingin menambah, atau hanya mengubah data array tanda harus mengubah selruh field array
+
+-> $set         : mengubah nilai field di document,
+-> $unset       : menghapus field di document
+-> $rename      : mengubah nama field di document,
+-> $inc         : menaikan nilai number di field sesuai dengan jumlah tertentu (increment)
+-> $currentDate : mengubah field menjadi waktu saat ini
+
+
+ */
