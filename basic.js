@@ -597,5 +597,146 @@ db.products.updateMany({},{
 -> $inc         : menaikan nilai number di field sesuai dengan jumlah tertentu (increment)
 -> $currentDate : mengubah field menjadi waktu saat ini
 
+$               : mengupdate data array pertama sesuai kondisi query
+$[]             : mengupdate semua data array sesuai dengan kondisi array
+$[<identifier>] : mengupdate semua data array yang sesuai kondisi array filters
+<index>         : mengupdate data array sesuai dengan nomor index
+$addToset       : menambahkan value ke array, hiaraukan jika sudah ada
+$pop            : menghapus element pertama (-1) atau terakhir (1) array
+$pull           : menghapus semua elemen di array yang sesuai kondisi
+$push           : menambahkan element ke array
+$pullAll        : menghapus semua element di array
+
+
+ */
+
+/* ------------ $ ------------ */
+//update products set ratings = [90,80,70]
+
+db.products.updateMany({},{
+    $set:{
+        ratings:[90,80,70]
+    }
+})
+
+// update first element of array, query must include array fields where ratings =90
+db.products.updateMany({
+    ratings:90
+},{
+    $set:{
+        "ratings.$":100
+    }
+})
+
+/* ------------ $[] ------------ */
+//update all element of array to 100
+db.products.updateMany({},{
+    $set:{
+        "ratings.$[]":100
+    }
+})
+
+/* ------------ $[<identifier>] ------------ */
+//update element array menjadi 100 yang element array lebih besar sama dengan 80
+db.products.updateMany({},{
+    $set:{
+        "ratings.$[element]":100
+    }
+},{
+    arrayFilters:[
+        {
+            element:{
+                $gte:80
+            }
+        }
+    ]
+})
+
+/* ------------ index ------------ */
+//update element array dengan index 0 = 60 dan index 1= 70
+
+db.products.updateMany({},{
+    $set:{
+        'ratins.0':60,
+        'ratings.1':70
+    }
+})
+
+/* ------------ $addToSet ------------ */
+// add "popular" to array if not exists => jika belum ada tags yang isinya poplar maka update tags dengan kondisi _id=1
+
+db.products.updateOne({
+    _id:1
+},{
+    $addToSet:{
+        tags:'popular'
+    }
+});
+
+
+/* ------------ $pop ------------ */
+// menghapus elemet pertama pada array
+db.products.updateOne({
+    _id:1
+},{
+    $pop:{
+        ratings:-1
+    }
+})
+
+//  menghapus element terakhir pada array
+db.products.updateOne({
+    _id:2
+},{
+    $pop:{
+        ratings:1
+    }
+})
+
+/* ------------ $pull ------------ */
+// menghapus semua element array ketika ada element array >= 80
+
+db.products.updateMany({},{
+    $pull:{
+        ratings:{
+            $gte:80
+        }
+    }
+})
+
+/* ------------ $push ------------ */
+// menambahkan element 100 pada array ratings
+
+db.products.updateMany({},{
+    $push:{
+        ratings:100
+    }
+})
+
+/* ------------ $pullAll ------------ */
+// menghapus element 100
+
+db.products.updateMany({},{
+    $pullAll:{
+        ratings:[100]
+    }
+})
+
+// menghapus element 100 dan 0
+
+db.products.updateMany({},{
+    $pullAll:{
+        ratings:[100,0]
+    }
+})
+
+// ----------------------- ARRAY UPDATE OPERATOR MODIFIER ---------------------- //
+/*
+
+$each           : digunakan di $addToSet dan $push, untuk menambhakan  multiple element
+$position       : digunakan di $push untuk mengubah posisi menambahakan data
+$slice          : digunakan di $push untuk mengubah posisi menambahkan data
+$sort           : dignakan untuk mengurutkan array setelah operasi $push
+
 
  */
